@@ -21,40 +21,44 @@ public class GridTerrain : MonoBehaviour
 
     void CreateGridMesh()
     {
-        int vertexCount = (width + 1) * (height + 1); // Number of vertices
+        // Increase vertex density by 2x in both directions
+        int vertexCount = (width * 2 + 1) * (height * 2 + 1);
         vertices = new Vector3[vertexCount];
 
-        int triangleCount = width * height * 6; // Each square will be divided into two triangles
+        // Increase triangle density by 4x (2 triangles per subdivided square)
+        int triangleCount = (width * 2) * (height * 2) * 6; // 6 indices per square
         triangles = new int[triangleCount];
 
         // Create vertices
         int v = 0;
-        for (int z = 0; z <= height; z++)
+        for (int z = 0; z <= height * 2; z++) // Loop over the finer grid
         {
-            for (int x = 0; x <= width; x++)
+            for (int x = 0; x <= width * 2; x++)
             {
-                vertices[v] = new Vector3(x * cellSize, 0, z * cellSize); // Position vertices based on grid
+                vertices[v] = new Vector3(x * cellSize / 2, 0, z * cellSize / 2); // Halve the cell size for finer detail
                 v++;
             }
         }
 
-        // Create triangles
+        // Create triangles (each subdivided square will have 2 triangles)
         int t = 0;
-        for (int z = 0; z < height; z++)
+        for (int z = 0; z < height * 2; z++) // Loop over finer grid cells
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < width * 2; x++)
             {
-                int start = z * (width + 1) + x;
+                int start = z * (width * 2 + 1) + x;
 
+                // First triangle (lower left triangle)
                 triangles[t] = start;
-                triangles[t + 1] = start + width + 1;
+                triangles[t + 1] = start + width * 2 + 1;
                 triangles[t + 2] = start + 1;
 
+                // Second triangle (upper right triangle)
                 triangles[t + 3] = start + 1;
-                triangles[t + 4] = start + width + 1;
-                triangles[t + 5] = start + width + 2;
+                triangles[t + 4] = start + width * 2 + 1;
+                triangles[t + 5] = start + width * 2 + 2;
 
-                t += 6; // Move to the next triangle
+                t += 6; // Move to the next triangle (6 indices per square)
             }
         }
 
@@ -68,6 +72,7 @@ public class GridTerrain : MonoBehaviour
         meshCollider.sharedMesh = mesh;
     }
 
+
     // Call this function from the ToolSwap script when digging
     public void DigHole(Vector3 point, float depth, float radius)
     {
@@ -80,8 +85,9 @@ public class GridTerrain : MonoBehaviour
 
             if (distance < radius)
             {
-                // Deform the vertex based on how close it is to the dig point
-                float deformation = (1 - (distance / radius)) * depth;
+                // Use a smooth falloff for deformation (e.g., quadratic falloff)
+                float falloff = Mathf.Pow(1 - (distance / radius), 2); // Smooth falloff
+                float deformation = falloff * depth;
                 vertices[i].y -= deformation; // Decrease Y-axis (digging down)
             }
         }
