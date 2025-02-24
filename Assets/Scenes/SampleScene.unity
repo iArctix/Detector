@@ -270,6 +270,7 @@ GameObject:
   - component: {fileID: 380037947}
   - component: {fileID: 380037946}
   - component: {fileID: 380037952}
+  - component: {fileID: 380037953}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -431,6 +432,19 @@ MonoBehaviour:
   diggableLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &380037953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380037945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e38ebfbedaca23448fe92ad58dbe618, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupRange: 3
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -882,7 +896,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemsToSpawn:
   - {fileID: 5211943179542698112, guid: 9c9380bb106bb664b882768a39214f30, type: 3}
-  itemCount: 10
+  itemCount: 50
   spawnArea: {fileID: 1143000466}
   maxDepth: -5
 --- !u!1 &2126983445
