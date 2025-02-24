@@ -7,10 +7,13 @@ public class GridTerrain : MonoBehaviour
     public int width = 20;  // Width of the grid
     public int height = 20; // Height of the grid
     public float cellSize = 1f; // Size of each cell
+    public float maxDigDepth = -3.0f; // Maximum depth we can dig (e.g., 3 units below the original surface)
+
     private Mesh mesh;
     private Vector3[] vertices;
     private int[] triangles;
     private MeshCollider meshCollider;
+    private float[] originalHeights; // Store the original Y positions of vertices
 
     void Start()
     {
@@ -24,6 +27,7 @@ public class GridTerrain : MonoBehaviour
         // Increase vertex density by 2x in both directions
         int vertexCount = (width * 2 + 1) * (height * 2 + 1);
         vertices = new Vector3[vertexCount];
+        originalHeights = new float[vertexCount];  // Initialize array for original heights
 
         // Increase triangle density by 4x (2 triangles per subdivided square)
         int triangleCount = (width * 2) * (height * 2) * 6; // 6 indices per square
@@ -36,6 +40,7 @@ public class GridTerrain : MonoBehaviour
             for (int x = 0; x <= width * 2; x++)
             {
                 vertices[v] = new Vector3(x * cellSize / 2, 0, z * cellSize / 2); // Halve the cell size for finer detail
+                originalHeights[v] = vertices[v].y;  // Store the original Y position
                 v++;
             }
         }
@@ -72,7 +77,6 @@ public class GridTerrain : MonoBehaviour
         meshCollider.sharedMesh = mesh;
     }
 
-
     // Call this function from the ToolSwap script when digging
     public void DigHole(Vector3 point, float depth, float radius)
     {
@@ -88,7 +92,11 @@ public class GridTerrain : MonoBehaviour
                 // Use a smooth falloff for deformation (e.g., quadratic falloff)
                 float falloff = Mathf.Pow(1 - (distance / radius), 2); // Smooth falloff
                 float deformation = falloff * depth;
-                vertices[i].y -= deformation; // Decrease Y-axis (digging down)
+
+                // Calculate the max allowed Y value based on original height and max dig depth
+                float newY = vertices[i].y - deformation;
+                float maxAllowedY = originalHeights[i] + maxDigDepth;  // Calculate max allowed depth
+                vertices[i].y = Mathf.Max(newY, maxAllowedY);  // Ensure we don't go past max depth
             }
         }
 
@@ -98,3 +106,4 @@ public class GridTerrain : MonoBehaviour
         meshCollider.sharedMesh = mesh; // Update collider
     }
 }
+
