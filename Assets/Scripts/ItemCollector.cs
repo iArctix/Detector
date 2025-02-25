@@ -19,11 +19,13 @@ public class ItemCollector : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, pickupRange))
         {
-            if (hit.collider.CompareTag("Item"))
+            CollectibleItem item = hit.collider.GetComponent<CollectibleItem>();
+            if (item != null && item.CanBeCollected())
             {
                 Debug.Log("Collected: " + hit.collider.gameObject.name);
                 Destroy(hit.collider.gameObject);
             }
         }
     }
+
 }

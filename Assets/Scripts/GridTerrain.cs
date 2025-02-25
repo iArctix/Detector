@@ -7,7 +7,7 @@ public class GridTerrain : MonoBehaviour
     public int width = 20;  // Width of the grid
     public int height = 20; // Height of the grid
     public float cellSize = 1f; // Size of each cell
-    public float maxDigDepth = -3.0f; // Maximum depth we can dig (e.g., 3 units below the original surface)
+   // public float maxDigDepth = -3.0f; // Maximum depth we can dig (e.g., 3 units below the original surface)
 
     private Mesh mesh;
     private Vector3[] vertices;
@@ -80,30 +80,24 @@ public class GridTerrain : MonoBehaviour
     // Call this function from the ToolSwap script when digging
     public void DigHole(Vector3 point, float depth, float radius)
     {
-        Vector3 localPoint = transform.InverseTransformPoint(point); // Convert point to local space
+        Vector3 localPoint = transform.InverseTransformPoint(point);
 
-        // Loop through vertices and deform the ones within the radius of the dig
         for (int i = 0; i < vertices.Length; i++)
         {
             float distance = Vector3.Distance(localPoint, vertices[i]);
 
             if (distance < radius)
             {
-                // Use a smooth falloff for deformation (e.g., quadratic falloff)
-                float falloff = Mathf.Pow(1 - (distance / radius), 2); // Smooth falloff
+                float falloff = Mathf.Pow(1 - (distance / radius), 2);
                 float deformation = falloff * depth;
 
-                // Calculate the max allowed Y value based on original height and max dig depth
-                float newY = vertices[i].y - deformation;
-                float maxAllowedY = originalHeights[i] + maxDigDepth;  // Calculate max allowed depth
-                vertices[i].y = Mathf.Max(newY, maxAllowedY);  // Ensure we don't go past max depth
+                vertices[i].y -= deformation; // Remove depth limit
             }
         }
 
-        // Update mesh with new vertices
         mesh.vertices = vertices;
-        mesh.RecalculateNormals(); // Recalculate normals
-        meshCollider.sharedMesh = mesh; // Update collider
+        mesh.RecalculateNormals();
+        meshCollider.sharedMesh = mesh;
     }
 }
 

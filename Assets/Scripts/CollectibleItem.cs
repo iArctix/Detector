@@ -2,38 +2,52 @@ using UnityEngine;
 
 public class CollectibleItem : MonoBehaviour
 {
+    public bool wasCovered = false;
+    public bool canBeCollected = false;
+    public bool isUncovered = false;
     private Rigidbody rb;
-    private bool isUncovered = false;
-    private bool canBeCollected = false;
-    private float checkRadius = 0.5f; // Adjust based on object size
-    private GridTerrain terrain; // Reference to terrain
+    private int groundCollisions = 0; // Track number of ground collisions
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true; // Disable physics initially
-        terrain = FindObjectOfType<GridTerrain>(); // Find terrain in the scene
+        rb.useGravity = false; // Start with gravity disabled
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("terrain"))
+        {
+            wasCovered = true; // The item has been covered at least once
+            groundCollisions++; // Increase collision count
+            isUncovered = false; // Reset uncover status
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("terrain"))
+        {
+            groundCollisions--; // Reduce collision count
+        }
     }
 
     void Update()
     {
-        if (!isUncovered)
+        // If it was covered at least once and is no longer colliding with the ground, mark as uncovered
+        if (wasCovered && groundCollisions <= 0)
         {
-            CheckIfUncovered();
+            isUncovered = true;
+            EnableGravity();
         }
     }
 
-    void CheckIfUncovered()
+    void EnableGravity()
     {
-        Vector3 itemPosition = transform.position;
-        float terrainHeight = terrain.GetTerrainHeightAt(itemPosition);
-
-        // Check if the lowest point of the object is above the terrain
-        if (itemPosition.y > terrainHeight)
+        if (!canBeCollected) // Only enable once
         {
-            isUncovered = true;
-            rb.isKinematic = false; // Enable gravity
-            canBeCollected = true;
+            rb.useGravity = true; // Enable gravity
+            canBeCollected = true; // Now the item can be collected
         }
     }
 

@@ -5,7 +5,7 @@ public class ItemSpawner : MonoBehaviour
     public GameObject[] itemsToSpawn; // Array of item prefabs
     public int itemCount = 10; // Number of items to spawn
     public BoxCollider spawnArea; // Assign this in the Inspector
-    public float maxDepth = -15f; // Maximum depth relative to terrain surface
+    public float maxDepth = -5f; // Maximum depth relative to terrain surface
 
     void Start()
     {

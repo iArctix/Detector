@@ -581,7 +581,7 @@ GameObject:
   - component: {fileID: 725281201}
   m_Layer: 6
   m_Name: Terrain
-  m_TagString: Untagged
+  m_TagString: terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -617,7 +617,6 @@ MonoBehaviour:
   width: 100
   height: 100
   cellSize: 0.5
-  maxDigDepth: -5
 --- !u!64 &725281199
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -876,7 +875,7 @@ Transform:
   m_GameObject: {fileID: 1143000465}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 24, y: -0.31, z: 24}
+  m_LocalPosition: {x: 24, y: -0.47, z: 24}
   m_LocalScale: {x: 45, y: 1, z: 45}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -898,7 +897,7 @@ MonoBehaviour:
   - {fileID: 5211943179542698112, guid: 9c9380bb106bb664b882768a39214f30, type: 3}
   itemCount: 50
   spawnArea: {fileID: 1143000466}
-  maxDepth: -5
+  maxDepth: -3
 --- !u!1 &2126983445
 GameObject:
   m_ObjectHideFlags: 0
