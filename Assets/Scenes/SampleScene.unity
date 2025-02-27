@@ -540,7 +540,7 @@ MonoBehaviour:
   itemCount: 50
   spawnArea: {fileID: 1143000466}
   maxDepth: -3
---- !u!1001 &4581992526285807280
+--- !u!1001 &1672046508
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -548,60 +548,60 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 910346386873302966, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.38
+      value: 5.99
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.23
+      value: 1.88
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.11
+      value: 8.835
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4555049309968136062, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+    - target: {fileID: 5545451289083659464, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6272576640608124590, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
+      propertyPath: m_Name
+      value: Player 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 29011853d8d941a4c8acde8846732bb3, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 75905c91e7cd448499af3626cb5667cc, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 410087041}
   - {fileID: 832575519}
-  - {fileID: 4581992526285807280}
   - {fileID: 725281197}
+  - {fileID: 1672046508}
