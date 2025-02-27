@@ -5,7 +5,7 @@ public class Movement : MonoBehaviour
     public float speed = 5f;
     public float mouseSensitivity = 2f;
     public float jumpForce = 5f;
-    public Transform cameraHolder;  // Assign a child object for vertical camera rotation
+    public Transform cameraHolder;  // Child object for vertical camera rotation
 
     private Rigidbody rb;
     private float rotationX = 0f;
@@ -36,9 +36,8 @@ public class Movement : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // Rotate player body left/right (Rigidbody rotation for smoother physics)
-        Quaternion newRotation = Quaternion.Euler(0f, mouseX, 0f) * rb.rotation;
-        rb.MoveRotation(newRotation);
+        // Rotate player body left/right
+        transform.Rotate(Vector3.up * mouseX);
 
         // Rotate camera up/down
         rotationX -= mouseY;
@@ -62,16 +61,23 @@ public class Movement : MonoBehaviour
         if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
+            isGrounded = false;
         }
     }
 
-    void OnCollisionStay(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
-        isGrounded = true;
+        if (collision.gameObject.CompareTag("terrain"))
+        {
+            isGrounded = true;
+        }
     }
 
     void OnCollisionExit(Collision collision)
     {
-        isGrounded = false;
+        if (collision.gameObject.CompareTag("terrain"))
+        {
+            isGrounded = false;
+        }
     }
 }

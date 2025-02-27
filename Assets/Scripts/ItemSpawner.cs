@@ -35,18 +35,10 @@ public class ItemSpawner : MonoBehaviour
         Bounds bounds = spawnArea.bounds;
 
         float randomX = Random.Range(bounds.min.x, bounds.max.x);
+        float randomY = Random.Range(bounds.min.y, bounds.max.y); // Full box height
         float randomZ = Random.Range(bounds.min.z, bounds.max.z);
 
-        // Raycast down to find terrain surface
-        RaycastHit hit;
-        if (Physics.Raycast(new Vector3(randomX, bounds.max.y, randomZ), Vector3.down, out hit))
-        {
-            float surfaceY = hit.point.y; // Terrain surface height
-            float randomY = Random.Range(surfaceY, surfaceY + maxDepth); // Random depth below surface
-
-            return new Vector3(randomX, randomY, randomZ);
-        }
-
-        return new Vector3(randomX, bounds.min.y, randomZ); // Default if no terrain hit
+        return new Vector3(randomX, randomY, randomZ);
     }
+
 }

@@ -4,10 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(MeshCollider))]
 public class GridTerrain : MonoBehaviour
 {
-    public int width = 20;  // Width of the grid
-    public int height = 20; // Height of the grid
-    public float cellSize = 1f; // Size of each cell
-   // public float maxDigDepth = -3.0f; // Maximum depth we can dig (e.g., 3 units below the original surface)
+    public int width = 100;  // Width of the grid
+    public int height = 100; // Height of the grid
+    public float cellSize = 0.5f; // Size of each cell
 
     private Mesh mesh;
     private Vector3[] vertices;
@@ -91,7 +90,7 @@ public class GridTerrain : MonoBehaviour
                 float falloff = Mathf.Pow(1 - (distance / radius), 2);
                 float deformation = falloff * depth;
 
-                vertices[i].y -= deformation; // Remove depth limit
+                vertices[i].y -= deformation; // Now can dig infinitely deep
             }
         }
 
@@ -100,4 +99,3 @@ public class GridTerrain : MonoBehaviour
         meshCollider.sharedMesh = mesh;
     }
 }
-
