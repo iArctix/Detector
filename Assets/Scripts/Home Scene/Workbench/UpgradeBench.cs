@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class UpgradeBench : MonoBehaviour
 {
@@ -7,11 +8,14 @@ public class UpgradeBench : MonoBehaviour
 
     public Camera playerCamera;
     public Camera workbenchCamera;
-    public Camera upgradeCamera;
 
     public GameObject player; // Reference to the player GameObject
 
     public ToolSelectionUI toolSelectionUIscript;
+
+    public Transform selectionPosition; // Position for tool selection camera
+    public Transform upgradePosition;   // Position for upgrade camera
+    public float transitionSpeed = 1.5f;  // Speed for smooth transitions
 
     private bool playerInRange = false;
     private bool inUpgradeMode = false;
@@ -21,7 +25,6 @@ public class UpgradeBench : MonoBehaviour
         toolSelectionUI.SetActive(false);
         upgradeUI.SetActive(false);
         workbenchCamera.gameObject.SetActive(false);
-        upgradeCamera.gameObject.SetActive(false);
     }
 
     void Update()
@@ -60,23 +63,31 @@ public class UpgradeBench : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // Switch to workbench camera
+        // Switch to workbench camera instantly (no smooth transition)
         playerCamera.gameObject.SetActive(false);
         workbenchCamera.gameObject.SetActive(true);
 
         // Enable Tool Selection UI
         toolSelectionUI.SetActive(true);
+        upgradeUI.SetActive(false);
+
+        inUpgradeMode = false;
+
+        // Reset camera to selection position (instant snap)
+        workbenchCamera.transform.position = selectionPosition.position;
+        workbenchCamera.transform.rotation = selectionPosition.rotation;
     }
 
     public void SelectTool(GameObject tool)
     {
-        // Hide Tool Selection UI, switch to Upgrade Camera
+        // Hide Tool Selection UI and switch to Upgrade Camera
         toolSelectionUI.SetActive(false);
-        workbenchCamera.gameObject.SetActive(false);
-        upgradeCamera.gameObject.SetActive(true);
         upgradeUI.SetActive(true);
 
         inUpgradeMode = true;
+
+        // Start the smooth camera transition to the upgrade position
+        StartCoroutine(SmoothCameraTransition(workbenchCamera.transform, upgradePosition));
     }
 
     public void ExitUpgradeMode()
@@ -95,27 +106,49 @@ public class UpgradeBench : MonoBehaviour
         toolSelectionUI.SetActive(false);
         upgradeUI.SetActive(false);
 
-        // Disable both workbench and upgrade cameras
+        // Disable workbench camera
         workbenchCamera.gameObject.SetActive(false);
-        upgradeCamera.gameObject.SetActive(false);
 
         // Enable player camera
         playerCamera.gameObject.SetActive(true);
 
+        // Reset UI state
+        toolSelectionUIscript.deselectboth();
+
+        inUpgradeMode = false;
+    }
+
+    // This is the method triggered by the UI button
+    public void BackToSelect()
+    {
+        // Start smooth camera transition back to the selection position
+        StartCoroutine(SmoothCameraTransition(workbenchCamera.transform, selectionPosition));
+
+        // Enable tool selection UI
+        toolSelectionUI.SetActive(true);
+        upgradeUI.SetActive(false);
+
         inUpgradeMode = false;
 
-        //resets the tool objects
+        // Reset UI state
         toolSelectionUIscript.deselectboth();
     }
 
-
-    public void backtoselect()
+    IEnumerator SmoothCameraTransition(Transform currentCamera, Transform targetPosition)
     {
-        workbenchCamera.gameObject.SetActive(true);
-        upgradeCamera.gameObject.SetActive(false);
-        toolSelectionUIscript.deselectboth();
-        inUpgradeMode = false;
-        toolSelectionUI.SetActive(true);
-        upgradeUI.SetActive(false);
+        // Smoothly transition the camera position and rotation
+        float journeyLength = Vector3.Distance(currentCamera.position, targetPosition.position);
+        float startTime = Time.time;
+
+        while (Vector3.Distance(currentCamera.position, targetPosition.position) > 0.01f)
+        {
+            float distanceCovered = (Time.time - startTime) * transitionSpeed;
+            float fractionOfJourney = distanceCovered / journeyLength;
+
+            currentCamera.position = Vector3.Lerp(currentCamera.position, targetPosition.position, fractionOfJourney);
+            currentCamera.rotation = Quaternion.Lerp(currentCamera.rotation, targetPosition.rotation, fractionOfJourney);
+
+            yield return null;
+        }
     }
 }
