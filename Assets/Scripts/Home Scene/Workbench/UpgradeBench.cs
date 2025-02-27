@@ -11,6 +11,8 @@ public class UpgradeBench : MonoBehaviour
 
     public GameObject player; // Reference to the player GameObject
 
+    public ToolSelectionUI toolSelectionUIscript;
+
     private bool playerInRange = false;
     private bool inUpgradeMode = false;
 
@@ -101,5 +103,19 @@ public class UpgradeBench : MonoBehaviour
         playerCamera.gameObject.SetActive(true);
 
         inUpgradeMode = false;
+
+        //resets the tool objects
+        toolSelectionUIscript.deselectboth();
+    }
+
+
+    public void backtoselect()
+    {
+        workbenchCamera.gameObject.SetActive(true);
+        upgradeCamera.gameObject.SetActive(false);
+        toolSelectionUIscript.deselectboth();
+        inUpgradeMode = false;
+        toolSelectionUI.SetActive(true);
+        upgradeUI.SetActive(false);
     }
 }
