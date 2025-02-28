@@ -19,6 +19,10 @@ public class PCInteraction : MonoBehaviour
         {
             EnterPC();
         }
+        if(onpc && Input.GetKeyDown(KeyCode.Escape))
+        {
+            ExitPC();
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -55,6 +59,9 @@ public class PCInteraction : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         pclight.SetActive(true);
+
+
+        onpc = true;
     }
 
     public void ExitPC()
@@ -73,5 +80,7 @@ public class PCInteraction : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         pclight.SetActive(false);
+        onpc = false;
+
     }
 }
