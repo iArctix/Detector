@@ -2,15 +2,18 @@ using UnityEngine;
 
 public class MonitorCursorScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public Texture2D cursorOverPC;  // Cursor when over the PC/monitor
+    public Texture2D defaultCursor; // Default cursor
+
+    private void OnMouseEnter()
     {
-        
+        // Change cursor when the mouse enters the monitor area
+        Cursor.SetCursor(cursorOverPC, Vector2.zero, CursorMode.Auto);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnMouseExit()
     {
-        
+        // Revert to the default cursor when the mouse leaves the monitor area
+        Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
     }
 }
