@@ -66,6 +66,8 @@ public class PCInteraction : MonoBehaviour
 
     public void ExitPC()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         // Re-enable the player and player camera
         player.SetActive(true);
         playerCamera.gameObject.SetActive(true);

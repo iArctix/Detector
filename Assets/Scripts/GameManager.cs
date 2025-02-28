@@ -5,9 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;  // Singleton instance
 
-    public int currentDay = 1;
-    public bool isNight = false;  // Tracks if it's nighttime
-    public string plotselected = "";
+    public PlayerData playerData;  // Reference to the PlayerData ScriptableObject
 
     private void Awake()
     {
@@ -20,52 +18,56 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);  // Prevent duplicates
         }
+
+        if (playerData == null)
+        {
+            Debug.LogError("PlayerData is not assigned in the GameManager!");
+        }
     }
 
     // Called when player selects a dig site from PC
     public void TravelToDigSite()
     {
-        isNight = false;  // Ensure it's day at dig site
+        playerData.isNight = false;  // Ensure it's day at dig site
 
-        //add the locations
-        if (!isNight && plotselected == "field")
+        if (!playerData.isNight && playerData.plotSelected == "field")
         {
-            {
-                SceneManager.LoadScene("Field");
-            }
+            SceneManager.LoadScene("Field");
         }
-        else if(!isNight && plotselected == "")
+        else if (!playerData.isNight && playerData.plotSelected == "")
         {
             Debug.Log("No location chosen");
         }
+        else if(playerData.isNight)
+        {
+            Debug.Log("It's night time!");
+        }
         else
         {
-            Debug.Log("Its night time lmao");
+            Debug.Log("I forgot a condition");
         }
-        
     }
 
     // Called when player returns to home after digging
     public void ReturnHome()
     {
-        isNight = true;  // Set time to night
+        playerData.isNight = true;  // Set time to night
         SceneManager.LoadScene("Home");
     }
 
     // Called when player sleeps in bed
     public void SleepAndStartNewDay()
     {
-        if(!isNight)
+        if (!playerData.isNight)
         {
-            Debug.Log("its day lmao");
+            Debug.Log("It's day time!");
         }
         else
         {
-            currentDay++;  // Increase day count
-            isNight = false;  // Reset to morning
+            playerData.currentDay++;  // Increase day count
+            playerData.isNight = false;  // Reset to morning
             SceneManager.LoadScene("Home");
-            plotselected = "";
+            playerData.plotSelected = "";  // Reset the plot selection
         }
-        
     }
 }

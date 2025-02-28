@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class GraftSite : MonoBehaviour
 {
-    public GameManager GameManager;
+    public PlayerData playerData;
     public void fieldbutton()
     {
-        GameManager.plotselected = "field";
+        playerData.plotSelected = "field";
     }
 }
