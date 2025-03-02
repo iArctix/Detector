@@ -1,90 +1,62 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MetalDetector : MonoBehaviour
 {
-    public float detectionRange = 5f;
-    public float maxDetectionDepth = 10f;
-    public LayerMask itemLayer;
-    public AudioSource beepSound;
+    public float detectionRange = 5f; // How far the detector can scan
+    public float detectionAngle = 30f; // Angle of the detection cone
+    public float maxDepth = 1f; // Maximum depth the detector can detect
 
-    private Transform player;
-    private float beepTimer = 0f;
+    public Transform playerCamera; // Reference to the player's camera
+    public LayerMask itemLayer; // LayerMask for detecting items
+    public RectTransform radarArrowUI; // UI arrow to point toward the nearest item
 
-    void Start()
-    {
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-        if (playerObject != null)
-        {
-            player = playerObject.transform;
-        }
-        else
-        {
-            Debug.LogError("MetalDetector: No GameObject found with tag 'Player'! Make sure your player is tagged correctly.");
-        }
-
-        if (beepSound == null)
-        {
-            Debug.LogError("MetalDetector: No AudioSource assigned! Assign one in the Inspector.");
-        }
-    }
+    private GameObject nearestItem;
 
     void Update()
     {
-        if (player != null) // Prevents null reference error
+        ScanForItems();
+        UpdateRadarArrow();
+    }
+
+    void ScanForItems()
+    {
+        Collider[] items = Physics.OverlapSphere(transform.position, detectionRange, itemLayer);
+        float closestDistance = Mathf.Infinity;
+        nearestItem = null;
+
+        foreach (Collider item in items)
         {
-            DetectClosestItem();
+            Vector3 directionToItem = (item.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(playerCamera.forward, directionToItem);
+            float itemDepth = item.transform.position.y - transform.position.y; // Check item depth
+
+            if (angle < detectionAngle && itemDepth <= maxDepth) // Is item in front & within depth?
+            {
+                float distance = Vector3.Distance(transform.position, item.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    nearestItem = item.gameObject;
+                }
+            }
         }
     }
 
-    void DetectClosestItem()
+    void UpdateRadarArrow()
     {
-        Collider[] detectedItems = Physics.OverlapSphere(player.position, detectionRange, itemLayer);
-
-        if (detectedItems.Length > 0)
+        if (nearestItem != null)
         {
-            float closestDistance = Mathf.Infinity;
-            Collider closestItem = null;
+            Vector3 toItem = nearestItem.transform.position - transform.position;
+            float angle = Vector3.SignedAngle(playerCamera.forward, toItem, Vector3.up);
 
-            foreach (Collider item in detectedItems)
-            {
-                float distance = Vector3.Distance(player.position, item.transform.position);
-                if (item.transform.position.y < maxDetectionDepth)
-                {
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestItem = item;
-                    }
-                }
-            }
-
-            if (closestItem != null)
-            {
-                AdjustBeeping(closestDistance);
-            }
+            // Convert world angle to UI rotation
+            radarArrowUI.rotation = Quaternion.Euler(0, 0, -angle);
+            radarArrowUI.gameObject.SetActive(true);
         }
         else
         {
-            StopBeeping();
+            radarArrowUI.gameObject.SetActive(false); // Hide arrow if no item found
         }
-    }
-
-    void AdjustBeeping(float distance)
-    {
-        if (beepSound == null) return; // Prevents errors if beepSound isn't assigned
-
-        float beepRate = Mathf.Clamp(1f / distance, 0.2f, 2f);
-        beepTimer -= Time.deltaTime;
-
-        if (beepTimer <= 0f)
-        {
-            beepSound.Play();
-            beepTimer = 1f / beepRate;
-        }
-    }
-
-    void StopBeeping()
-    {
-        beepTimer = 0f;
     }
 }
