@@ -2,14 +2,17 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    public float speed = 5f;
+    public float normalSpeed = 5f;
+    public float detectorSpeed = 2f; // Slower speed for metal detector mode
     public float mouseSensitivity = 2f;
     public float jumpForce = 5f;
     public Transform cameraHolder;  // Child object for vertical camera rotation
+    public ToolSwap toolSwap;       // Reference to ToolSwap script
 
     private Rigidbody rb;
     private float rotationX = 0f;
     private bool isGrounded = false;
+    private bool detectorMode = false; // Tracks if metal detector is equipped
 
     void Start()
     {
@@ -24,6 +27,14 @@ public class Movement : MonoBehaviour
     {
         HandleMouseLook();
         HandleJump();
+
+        // Check if the metal detector is equipped
+        detectorMode = toolSwap.IsMetalDetectorEquipped();
+
+        if (detectorMode)
+        {
+            LockCameraForDetector(); // Lock camera when metal detector is equipped
+        }
     }
 
     void FixedUpdate()
@@ -36,13 +47,23 @@ public class Movement : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // Rotate player body left/right
+        // Rotate left/right (always allowed)
         transform.Rotate(Vector3.up * mouseX);
 
-        // Rotate camera up/down
-        rotationX -= mouseY;
-        rotationX = Mathf.Clamp(rotationX, -90f, 90f);
-        cameraHolder.localRotation = Quaternion.Euler(rotationX, 0f, 0f);
+        if (!detectorMode)
+        {
+            // Regular vertical look
+            rotationX -= mouseY;
+            rotationX = Mathf.Clamp(rotationX, -90f, 90f);
+            cameraHolder.localRotation = Quaternion.Euler(rotationX, 0f, 0f);
+        }
+    }
+
+    void LockCameraForDetector()
+    {
+        // Fix camera looking downward when using metal detector
+        cameraHolder.localRotation = Quaternion.Euler(30f, 0f, 0f); // Tilt camera downward
+        rotationX = 30f; // Lock vertical rotation
     }
 
     void HandleMovement()
@@ -50,8 +71,10 @@ public class Movement : MonoBehaviour
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
+        float currentSpeed = detectorMode ? detectorSpeed : normalSpeed; // Adjust speed for detector mode
+
         Vector3 moveDirection = transform.right * moveX + transform.forward * moveZ;
-        Vector3 newPosition = rb.position + moveDirection * speed * Time.fixedDeltaTime;
+        Vector3 newPosition = rb.position + moveDirection * currentSpeed * Time.fixedDeltaTime;
 
         rb.MovePosition(newPosition);
     }

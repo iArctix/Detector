@@ -2,34 +2,35 @@ using UnityEngine;
 
 public class ToolSwap : MonoBehaviour
 {
-    public GameObject fist;           // Reference to the Fist (default tool)
-    public GameObject metalDetector;  // Reference to the Metal Detector
-    public GameObject shovel;         // Reference to the Shovel
+    public GameObject fist;          // Default tool (always available)
+    public GameObject metalDetector; // Metal detector
+    public GameObject shovel;        // Shovel
 
-    private GameObject currentTool;    // Keeps track of the equipped tool
+    private GameObject currentTool;  // Tracks the currently equipped tool
 
     private void Start()
     {
-        EquipTool(fist); // Start with Fist equipped
+        EquipTool(fist); // Start with fists equipped
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha0)) // Press 0 to equip Fist
+        if (Input.GetKeyDown(KeyCode.Alpha0)) // Press 0 to equip fists
         {
             EquipTool(fist);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha1)) // Press 1 to equip Metal Detector
+
+        if (Input.GetKeyDown(KeyCode.Alpha1)) // Press 1 to equip metal detector
         {
             EquipTool(metalDetector);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) // Press 2 to equip Shovel
+
+        if (Input.GetKeyDown(KeyCode.Alpha2)) // Press 2 to equip shovel
         {
             EquipTool(shovel);
         }
     }
 
-    // Function to enable the selected tool and disable the others
     void EquipTool(GameObject toolToEquip)
     {
         // Disable all tools first
@@ -40,5 +41,11 @@ public class ToolSwap : MonoBehaviour
         // Enable the selected tool
         toolToEquip.SetActive(true);
         currentTool = toolToEquip;
+    }
+
+    // Check if the metal detector is equipped (for movement script)
+    public bool IsMetalDetectorEquipped()
+    {
+        return currentTool == metalDetector;
     }
 }
