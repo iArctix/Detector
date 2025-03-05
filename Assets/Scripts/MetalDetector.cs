@@ -1,44 +1,47 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MetalDetector : MonoBehaviour
 {
     public float detectionRange = 5f; // How far the detector can scan
-    public float detectionAngle = 30f; // Angle of the detection cone
     public float maxDepth = 1f; // Maximum depth the detector can detect
+    public Transform detectorHead; // The actual metal detector's scanning position
+    public Transform playerCamera; // Player's camera for direction calculations
+    public LayerMask itemLayer; // Layer for detecting items
 
-    public Transform playerCamera; // Reference to the player's camera
-    public LayerMask itemLayer; // LayerMask for detecting items
-    public RectTransform radarArrowUI; // UI arrow to point toward the nearest item
+    public RectTransform radarArrowUI; // UI arrow pointing to the nearest item
+    public TextMeshProUGUI distanceText; // UI text to display item distance
+    public TextMeshProUGUI depthText; // UI text to display item depth
 
     private GameObject nearestItem;
+    private float nearestItemDistance;
+    private float nearestItemDepth;
 
     void Update()
     {
         ScanForItems();
         UpdateRadarArrow();
+        UpdateUI();
     }
 
     void ScanForItems()
     {
-        Collider[] items = Physics.OverlapSphere(transform.position, detectionRange, itemLayer);
+        Collider[] items = Physics.OverlapSphere(detectorHead.position, detectionRange, itemLayer);
         float closestDistance = Mathf.Infinity;
         nearestItem = null;
 
         foreach (Collider item in items)
         {
-            Vector3 directionToItem = (item.transform.position - transform.position).normalized;
-            float angle = Vector3.Angle(playerCamera.forward, directionToItem);
-            float itemDepth = item.transform.position.y - transform.position.y; // Check item depth
+            float itemDepth = detectorHead.position.y - item.transform.position.y; // Depth from detector, not player
+            float distance = Vector3.Distance(detectorHead.position, item.transform.position);
 
-            if (angle < detectionAngle && itemDepth <= maxDepth) // Is item in front & within depth?
+            if (itemDepth <= maxDepth && distance < closestDistance) // Check depth & find closest
             {
-                float distance = Vector3.Distance(transform.position, item.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    nearestItem = item.gameObject;
-                }
+                closestDistance = distance;
+                nearestItem = item.gameObject;
+                nearestItemDistance = distance;
+                nearestItemDepth = itemDepth;
             }
         }
     }
@@ -47,16 +50,30 @@ public class MetalDetector : MonoBehaviour
     {
         if (nearestItem != null)
         {
-            Vector3 toItem = nearestItem.transform.position - transform.position;
+            Vector3 toItem = (nearestItem.transform.position - playerCamera.position).normalized;
             float angle = Vector3.SignedAngle(playerCamera.forward, toItem, Vector3.up);
 
-            // Convert world angle to UI rotation
-            radarArrowUI.rotation = Quaternion.Euler(0, 0, -angle);
+            // Smoothly rotate the arrow towards the item
+            radarArrowUI.rotation = Quaternion.Lerp(radarArrowUI.rotation, Quaternion.Euler(0, 0, -angle), Time.deltaTime * 10f);
             radarArrowUI.gameObject.SetActive(true);
         }
         else
         {
             radarArrowUI.gameObject.SetActive(false); // Hide arrow if no item found
+        }
+    }
+
+    void UpdateUI()
+    {
+        if (nearestItem != null)
+        {
+            distanceText.text = "Distance: " + nearestItemDistance.ToString("F1") + "m";
+            depthText.text = "Depth: " + nearestItemDepth.ToString("F1") + "m";
+        }
+        else
+        {
+            distanceText.text = "Distance: ---";
+            depthText.text = "Depth: ---";
         }
     }
 }
