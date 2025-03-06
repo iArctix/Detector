@@ -33,8 +33,11 @@ public class MetalDetector : MonoBehaviour
 
         foreach (Collider item in items)
         {
-            float itemDepth = detectorHead.position.y - item.transform.position.y; // Depth from detector, not player
-            float distance = Vector3.Distance(detectorHead.position, item.transform.position);
+            Vector3 flatDetectorPos = new Vector3(detectorHead.position.x, 0, detectorHead.position.z);
+            Vector3 flatItemPos = new Vector3(item.transform.position.x, 0, item.transform.position.z);
+
+            float distance = Vector3.Distance(flatDetectorPos, flatItemPos); // 2D Distance (X, Z)
+            float itemDepth = Mathf.Abs(detectorHead.position.y - item.transform.position.y); // Depth (Y only)
 
             if (itemDepth <= maxDepth && distance < closestDistance) // Check depth & find closest
             {
@@ -50,7 +53,9 @@ public class MetalDetector : MonoBehaviour
     {
         if (nearestItem != null)
         {
-            Vector3 toItem = (nearestItem.transform.position - playerCamera.position).normalized;
+            Vector3 toItem = new Vector3(nearestItem.transform.position.x, detectorHead.position.y, nearestItem.transform.position.z) - detectorHead.position;
+            toItem.Normalize();
+
             float angle = Vector3.SignedAngle(playerCamera.forward, toItem, Vector3.up);
 
             // Smoothly rotate the arrow towards the item
