@@ -85,7 +85,7 @@ public class RadarSystem : MonoBehaviour
             Mathf.Cos(angle),
             -Mathf.Sin(angle),
             0
-        ) * (normalizedDistance * 50);
+        ) * (normalizedDistance * 200);
 
         activeBlip.GetComponent<RectTransform>().anchoredPosition = blipPosition;
     }
