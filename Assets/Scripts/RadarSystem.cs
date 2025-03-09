@@ -1,32 +1,28 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using TMPro;
+using System.Collections.Generic;
 
 public class RadarSystem : MonoBehaviour
 {
-    public Transform metalDetector;  // Reference to the Metal Detector's position
-    public float detectionRadius = 5f; // Detection range
-    public Transform sweepLine;  // UI Sweep Line
+    public Transform metalDetector; // The metal detector/player object
+    public float detectionRadius = 5f; // How far the radar can detect items
+    public Transform sweepLine; // The rotating UI sweep line
     public GameObject blipPrefab; // Blip prefab
     public Transform blipContainer; // Parent for blips in UI
     public TextMeshProUGUI distanceText; // UI for distance
     public TextMeshProUGUI depthText; // UI for depth
+    public float radarRangeUI = 220f; // UI radius scaling for the radar display
+    public float fadeSpeed = 2f; // Speed of fading effect
 
-    private float sweepSpeed = 100f; // Sweep speed
-    private GameObject activeBlip; // Current active blip
-    private GameObject nearestItem; // Closest detected item
-
-    void Start()
-    {
-        activeBlip = Instantiate(blipPrefab, blipContainer);
-        activeBlip.SetActive(false); // Start hidden
-    }
+    private float sweepSpeed = 100f; // Sweep rotation speed
+    private Dictionary<GameObject, GameObject> activeBlips = new Dictionary<GameObject, GameObject>(); // Map items to their blips
+    private float sweepAngleOffset = 90f; // ?? Corrects the 90-degree error
 
     void Update()
     {
         RotateSweepLine();
-        TrackNearestItem();
+        TrackItems();
     }
 
     void RotateSweepLine()
@@ -34,11 +30,9 @@ public class RadarSystem : MonoBehaviour
         sweepLine.Rotate(0, 0, -sweepSpeed * Time.deltaTime);
     }
 
-    void TrackNearestItem()
+    void TrackItems()
     {
-        nearestItem = null;
-        float nearestDistance = detectionRadius;
-        float detectedDepth = 0;
+        HashSet<GameObject> detectedItems = new HashSet<GameObject>();
 
         foreach (GameObject item in GameObject.FindGameObjectsWithTag("Item"))
         {
@@ -46,53 +40,79 @@ public class RadarSystem : MonoBehaviour
             Vector3 detectorPosition = new Vector3(metalDetector.position.x, 0, metalDetector.position.z);
             Vector3 itemFlatPosition = new Vector3(itemPosition.x, 0, itemPosition.z);
 
-            // **Flat distance (ignoring depth)**
             float flatDistance = Vector3.Distance(detectorPosition, itemFlatPosition);
-            float depth = itemPosition.y - metalDetector.position.y; // Keep depth for display
 
-            if (flatDistance <= detectionRadius && flatDistance < nearestDistance)
+            if (flatDistance <= detectionRadius)
             {
-                nearestDistance = flatDistance;
-                nearestItem = item;
-                detectedDepth = depth;
+                detectedItems.Add(item);
+
+                if (!activeBlips.ContainsKey(item))
+                {
+                    GameObject newBlip = Instantiate(blipPrefab, blipContainer);
+                    activeBlips[item] = newBlip;
+
+                    // ?? Set new blips to be fully transparent at start
+                    newBlip.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
+                }
+
+                UpdateBlip(item, activeBlips[item], flatDistance);
             }
         }
 
-        if (nearestItem != null)
+        RemoveOutOfRangeBlips(detectedItems);
+    }
+
+    void UpdateBlip(GameObject item, GameObject blip, float distance)
+    {
+        RectTransform blipTransform = blip.GetComponent<RectTransform>();
+        Image blipImage = blip.GetComponent<Image>();
+
+        // Get relative position of item in local space
+        Vector3 relativePosition = metalDetector.InverseTransformPoint(item.transform.position);
+
+        // Scale position so that max range aligns with radar UI size
+        float scaledX = (relativePosition.x / detectionRadius) * radarRangeUI;
+        float scaledY = (relativePosition.z / detectionRadius) * radarRangeUI;
+
+        blipTransform.anchoredPosition = new Vector2(scaledX, scaledY);
+
+        // Calculate angle difference between blip and sweep line
+        float blipAngle = Mathf.Atan2(scaledY, scaledX) * Mathf.Rad2Deg;
+        float sweepAngle = sweepLine.eulerAngles.z + sweepAngleOffset; // ?? Offset the sweep angle by 90 degrees
+
+        // Convert both angles to a 0-360 range
+        blipAngle = (blipAngle + 360) % 360;
+        sweepAngle = (sweepAngle + 360) % 360;
+
+        // Ensure the blip is only fully visible when the sweep passes
+        float angleDifference = Mathf.Abs(Mathf.DeltaAngle(sweepAngle, blipAngle));
+
+        if (angleDifference < 5f) // Adjust for tighter or looser detection
         {
-            UpdateBlip(nearestItem.transform.position, nearestDistance);
-            UpdateUI(nearestDistance, detectedDepth);
+            blipImage.color = new Color(1f, 1f, 1f, 1f); // Fully visible
         }
         else
         {
-            activeBlip.SetActive(false);
+            blipImage.color = new Color(1f, 1f, 1f, Mathf.Lerp(blipImage.color.a, 0f, fadeSpeed * Time.deltaTime));
         }
     }
 
-    void UpdateBlip(Vector3 itemPosition, float distance)
+    void RemoveOutOfRangeBlips(HashSet<GameObject> detectedItems)
     {
-        activeBlip.SetActive(true);
+        List<GameObject> toRemove = new List<GameObject>();
 
-        // Get relative position of item **from detector's head** (not player)
-        Vector3 relativePosition = itemPosition - metalDetector.position;
-        float angle = Mathf.Atan2(relativePosition.z, relativePosition.x) * Mathf.Rad2Deg;
+        foreach (var entry in activeBlips)
+        {
+            if (!detectedItems.Contains(entry.Key))
+            {
+                Destroy(entry.Value);
+                toRemove.Add(entry.Key);
+            }
+        }
 
-        // Normalize distance (closer = closer to radar center)
-        float normalizedDistance = Mathf.Clamp01(distance / detectionRadius);
-
-        // **Fix Blip Positioning (Invert Y)**
-        Vector3 blipPosition = new Vector3(
-            Mathf.Cos(angle),
-            -Mathf.Sin(angle),
-            0
-        ) * (normalizedDistance * 200);
-
-        activeBlip.GetComponent<RectTransform>().anchoredPosition = blipPosition;
-    }
-
-    void UpdateUI(float distance, float depth)
-    {
-        distanceText.text = "Distance: " + distance.ToString("F1") + "m";
-        depthText.text = "Depth: " + depth.ToString("F1") + "m";
+        foreach (var item in toRemove)
+        {
+            activeBlips.Remove(item);
+        }
     }
 }
