@@ -864,6 +864,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 980930683783514848, guid: db865797dc0df9d448bee834eb19c883, type: 3}
+      propertyPath: itemsToSpawn.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 980930683783514848, guid: db865797dc0df9d448bee834eb19c883, type: 3}
+      propertyPath: 'itemsToSpawn.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 31bb560e675611c45a741bf0e8efd00b, type: 2}
+    - target: {fileID: 980930683783514848, guid: db865797dc0df9d448bee834eb19c883, type: 3}
+      propertyPath: 'itemsToSpawn.Array.data[1]'
+      value: 
+      objectReference: {fileID: 5211943179542698112, guid: 9c9380bb106bb664b882768a39214f30, type: 3}
     - target: {fileID: 5683484001528222745, guid: db865797dc0df9d448bee834eb19c883, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.41
@@ -2078,6 +2090,14 @@ PrefabInstance:
       propertyPath: radarArrowUI
       value: 
       objectReference: {fileID: 1938980043}
+    - target: {fileID: 503156812140650539, guid: fe884f6d3d5853f46bca899e0467efa1, type: 3}
+      propertyPath: pickupRange
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 503156812140650539, guid: fe884f6d3d5853f46bca899e0467efa1, type: 3}
+      propertyPath: itemLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 1812335834840729481, guid: fe884f6d3d5853f46bca899e0467efa1, type: 3}
       propertyPath: fist
       value: 

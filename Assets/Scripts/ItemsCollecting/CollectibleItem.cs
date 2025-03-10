@@ -2,32 +2,41 @@ using UnityEngine;
 
 public class CollectibleItem : MonoBehaviour
 {
+    public ItemData itemData; // Reference to item data
     public bool wasCovered = false; // Set when terrain first covers it
     public bool canBeCollected = false; // Becomes true when uncovered
     public bool isUncovered = false; // True when no terrain is above
 
     private Rigidbody rb;
-    private Collider itemCollider; // Reference to the object's trigger collider
+    private Collider itemCollider;
     public LayerMask terrainLayer; // Assign this to "Terrain" in the Inspector
+
+    public int Quality { get; private set; } // Randomized item quality
+    public int ActualPrice { get; private set; } // Price based on quality
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         itemCollider = GetComponent<Collider>();
         rb.useGravity = false; // Start with gravity disabled
+        terrainLayer = LayerMask.GetMask("terrain");
+
+        if (itemData != null)
+        {
+            Initialize(itemData);
+        }
     }
 
     void Update()
     {
-        // Check if terrain is still inside the trigger area
         bool terrainIsInside = CheckForTerrain();
 
         if (terrainIsInside)
         {
-            wasCovered = true; // Mark that it was covered at least once
-            isUncovered = false; // Reset uncover state
+            wasCovered = true;
+            isUncovered = false;
         }
-        else if (wasCovered && !terrainIsInside) // If terrain is gone and it was covered before
+        else if (wasCovered && !terrainIsInside) // Uncovered for the first time
         {
             isUncovered = true;
             EnableGravity();
@@ -36,10 +45,8 @@ public class CollectibleItem : MonoBehaviour
 
     bool CheckForTerrain()
     {
-        // Get all colliders overlapping this object
         Collider[] colliders = Physics.OverlapSphere(transform.position, itemCollider.bounds.extents.magnitude, terrainLayer);
 
-        // Check if any of the colliders belong to the terrain
         foreach (Collider col in colliders)
         {
             if (col.CompareTag("terrain"))
@@ -52,19 +59,29 @@ public class CollectibleItem : MonoBehaviour
 
     void EnableGravity()
     {
-        if (!canBeCollected) // Only enable once
+        if (!canBeCollected)
         {
-            rb.useGravity = true; // Enable gravity
-            canBeCollected = true; // Now the item can be collected
+            rb.useGravity = true;
+            canBeCollected = true;
             rb.isKinematic = false;
 
-            Collider col = GetComponent<Collider>();
-            col.isTrigger = false;
+            itemCollider.isTrigger = false;
         }
     }
 
     public bool CanBeCollected()
     {
         return canBeCollected;
+    }
+
+    public void Initialize(ItemData data)
+    {
+        itemData = data;
+
+        // Randomly determine item quality (1-100)
+        Quality = Random.Range(1, 101);
+
+        // Calculate the item's actual price based on quality
+        ActualPrice = Mathf.RoundToInt(itemData.basePrice * (Quality / 100f));
     }
 }

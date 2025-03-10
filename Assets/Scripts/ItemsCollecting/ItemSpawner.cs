@@ -2,10 +2,9 @@ using UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
 {
-    public GameObject[] itemsToSpawn; // Array of item prefabs
+    public ItemData[] itemsToSpawn; // Array of ScriptableObject items
     public int itemCount = 10; // Number of items to spawn
     public BoxCollider spawnArea; // Assign this in the Inspector
-    public float maxDepth = -5f; // Maximum depth relative to terrain surface
 
     void Start()
     {
@@ -24,9 +23,15 @@ public class ItemSpawner : MonoBehaviour
         {
             Vector3 spawnPosition = GetRandomPositionInBox();
 
-            // Instantiate a random item at the position
-            GameObject itemPrefab = itemsToSpawn[Random.Range(0, itemsToSpawn.Length)];
-            Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
+            // Select a random item
+            ItemData selectedItem = itemsToSpawn[Random.Range(0, itemsToSpawn.Length)];
+
+            // Instantiate the item's 3D model
+            GameObject spawnedItem = Instantiate(selectedItem.itemModel, spawnPosition, Quaternion.identity);
+
+            // Add the CollectibleItem component and assign data
+            CollectibleItem collectible = spawnedItem.AddComponent<CollectibleItem>();
+            collectible.Initialize(selectedItem);
         }
     }
 
@@ -35,10 +40,9 @@ public class ItemSpawner : MonoBehaviour
         Bounds bounds = spawnArea.bounds;
 
         float randomX = Random.Range(bounds.min.x, bounds.max.x);
-        float randomY = Random.Range(bounds.min.y, bounds.max.y); // Full box height
+        float randomY = Random.Range(bounds.min.y, bounds.max.y);
         float randomZ = Random.Range(bounds.min.z, bounds.max.z);
 
         return new Vector3(randomX, randomY, randomZ);
     }
-
 }
