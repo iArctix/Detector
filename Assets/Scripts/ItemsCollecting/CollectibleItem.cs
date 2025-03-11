@@ -85,3 +85,4 @@ public class CollectibleItem : MonoBehaviour
         ActualPrice = Mathf.RoundToInt(itemData.basePrice * (Quality / 100f));
     }
 }
+
