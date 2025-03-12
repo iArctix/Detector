@@ -2,13 +2,15 @@ using UnityEngine;
 
 public class StationInteraction : MonoBehaviour
 {
-    public Camera playerCamera;   // Player's main camera
-    public Camera stationCamera;  // Camera for this specific station
-    public GameObject player;     // The player object
-    public GameObject stationUI;  // UI for this station
+    public Camera playerCamera;
+    public Camera stationCamera;
+    public GameObject player;
+    public GameObject stationUI;
+    public InventoryUIManager inventoryUIManager; // ? Reference to Inventory UI Manager
 
     private bool playerInRange = false;
     private bool isUsingStation = false;
+    public bool isStorageStation = false; // ? Add this flag to differentiate stations
 
     void Update()
     {
@@ -42,36 +44,45 @@ public class StationInteraction : MonoBehaviour
     {
         isUsingStation = true;
 
-        // Disable player movement & camera
         player.SetActive(false);
         playerCamera.gameObject.SetActive(false);
         playerCamera.enabled = false;
 
-        // Enable station camera & UI
         stationCamera.gameObject.SetActive(true);
         stationCamera.enabled = true;
         stationUI.SetActive(true);
 
-        // Unlock cursor for UI interaction
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        // ? Show inventory if it's a storage station
+        if (isStorageStation && inventoryUIManager != null)
+        {
+            inventoryUIManager.inventoryPanel.SetActive(true);
+            inventoryUIManager.PopulateInventory(); // Ensure it updates
+        }
     }
 
     public void ExitStation()
     {
         isUsingStation = false;
 
-        // Re-enable player movement & camera
         player.SetActive(true);
         playerCamera.gameObject.SetActive(true);
         playerCamera.enabled = true;
 
-        // Disable station camera & UI
         stationCamera.gameObject.SetActive(false);
         stationCamera.enabled = false;
         stationUI.SetActive(false);
-        // Lock cursor back to game mode
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // ? Hide inventory when leaving storage station
+        if (isStorageStation && inventoryUIManager != null)
+        {
+            inventoryUIManager.inventoryPanel.SetActive(false);
+            inventoryUIManager.ClearSpawnedItem(); // Remove any displayed items
+        }
     }
 }

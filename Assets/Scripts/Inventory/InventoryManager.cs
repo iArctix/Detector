@@ -25,6 +25,7 @@ public class InventoryManager : MonoBehaviour
     {
         inventory.Add(item);
         Debug.Log($"Added {item.itemName} to inventory!");
+        Debug.Log($"Added item: {item.itemName}. Total items: {inventory.Count}");
     }
 
     // Get all items in inventory

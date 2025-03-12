@@ -5,7 +5,6 @@ public class ItemCollector : MonoBehaviour
 {
     public float pickupRange = 2f; // Max distance to pick up an item
     public LayerMask itemLayer; // Set this to the "ItemLayer" in the Inspector
-    public List<ItemData> collectedItems = new List<ItemData>(); // Future inventory system
 
     void Update()
     {
@@ -27,7 +26,8 @@ public class ItemCollector : MonoBehaviour
                 CollectibleItem item = hit.collider.GetComponent<CollectibleItem>();
                 if (item != null && item.CanBeCollected())
                 {
-                    collectedItems.Add(item.itemData); // Store in inventory
+                    // Use InventoryManager to add the item to the inventory
+                    InventoryManager.Instance.AddItem(item.itemData);
                     Debug.Log($"Collected: {item.itemData.itemName} (Quality: {item.Quality}, Worth: ${item.ActualPrice})");
 
                     Destroy(hit.collider.gameObject); // Remove from world
