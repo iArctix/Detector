@@ -45,7 +45,6 @@ public class InventoryUIManager : MonoBehaviour
         foreach (ItemData item in inventory)
         {
             GameObject icon = Instantiate(itemIconPrefab, itemContainer);
-            icon.GetComponentInChildren<TMP_Text>().text = item.itemName;
             icon.GetComponent<Button>().onClick.AddListener(() => ShowItemDetails(item));
         }
     }
