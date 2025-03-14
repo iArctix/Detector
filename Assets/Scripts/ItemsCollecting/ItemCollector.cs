@@ -19,28 +19,21 @@ public class ItemCollector : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, pickupRange, itemLayer)) // Only hits objects on ItemLayer
+        if (Physics.Raycast(ray, out hit, pickupRange, itemLayer))
         {
-            if (hit.collider.CompareTag("Item")) // Ensure it's tagged correctly
+            if (hit.collider.CompareTag("Item"))
             {
                 CollectibleItem item = hit.collider.GetComponent<CollectibleItem>();
                 if (item != null && item.CanBeCollected())
                 {
-                    // Use InventoryManager to add the item to the inventory
-                    InventoryManager.Instance.AddItem(item.itemData);
+                    // Pass Quality & ActualPrice to inventory
+                    InventoryManager.Instance.AddItem(item.itemData, item.Quality, item.ActualPrice);
+
                     Debug.Log($"Collected: {item.itemData.itemName} (Quality: {item.Quality}, Worth: ${item.ActualPrice})");
 
-                    //Destroy(hit.collider.gameObject); // Remove from world
-                }
-                else
-                {
-                    Debug.Log("Item cannot be collected.");
+                    Destroy(hit.collider.gameObject); // Remove from world
                 }
             }
-        }
-        else
-        {
-            Debug.Log("No item detected.");
         }
     }
 }

@@ -9,8 +9,7 @@ public class InventoryUIManager : MonoBehaviour
     public Transform itemContainer; // RectTransform for item icons
     public GameObject itemIconPrefab; // Prefab for item icons
 
-    public TMP_Text itemNameText, itemDescriptionText , itemPrice, itemQuality; // UI Text for item details
-   
+    public TMP_Text itemNameText, itemDescriptionText, itemPrice, itemQuality; // UI Text for item details
 
     public Transform itemSpawnPoint; // Where the item will appear on the table
     private GameObject currentSpawnedItem; // The currently spawned item
@@ -40,25 +39,25 @@ public class InventoryUIManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        List<ItemData> inventory = InventoryManager.Instance.GetInventory();
+        List<InventoryManager.InventoryItem> inventory = InventoryManager.Instance.GetInventory();
 
-        foreach (ItemData item in inventory)
+        foreach (InventoryManager.InventoryItem inventoryItem in inventory)
         {
             GameObject icon = Instantiate(itemIconPrefab, itemContainer);
-            icon.GetComponent<Button>().onClick.AddListener(() => ShowItemDetails(item));
+            icon.GetComponent<Image>().sprite = inventoryItem.itemData.itemIcon; // Set icon image
+            icon.GetComponent<Button>().onClick.AddListener(() => ShowItemDetails(inventoryItem));
         }
     }
 
-    void ShowItemDetails(ItemData item)
+    void ShowItemDetails(InventoryManager.InventoryItem inventoryItem)
     {
+        ItemData item = inventoryItem.itemData; // Get base item details
+
         // Update UI details
         itemNameText.text = item.itemName;
         itemDescriptionText.text = item.information;
-        itemPrice.text = item.GetActualPrice().ToString();
-        itemQuality.text = item.quality.ToString();
-
-
-      
+        itemPrice.text = $"${inventoryItem.ActualPrice}"; // Show item's calculated price
+        itemQuality.text = $"Quality: {inventoryItem.Quality}"; // Show item's unique quality
 
         // Remove previous item and spawn new one
         if (currentSpawnedItem != null)
