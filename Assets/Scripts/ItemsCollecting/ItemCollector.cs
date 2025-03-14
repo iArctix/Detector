@@ -30,7 +30,7 @@ public class ItemCollector : MonoBehaviour
                     InventoryManager.Instance.AddItem(item.itemData);
                     Debug.Log($"Collected: {item.itemData.itemName} (Quality: {item.Quality}, Worth: ${item.ActualPrice})");
 
-                    Destroy(hit.collider.gameObject); // Remove from world
+                    //Destroy(hit.collider.gameObject); // Remove from world
                 }
                 else
                 {
