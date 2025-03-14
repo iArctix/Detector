@@ -867,7 +867,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 980930683783514848, guid: db865797dc0df9d448bee834eb19c883, type: 3}
       propertyPath: itemsToSpawn.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 980930683783514848, guid: db865797dc0df9d448bee834eb19c883, type: 3}
       propertyPath: 'itemsToSpawn.Array.data[0]'
@@ -876,7 +876,7 @@ PrefabInstance:
     - target: {fileID: 980930683783514848, guid: db865797dc0df9d448bee834eb19c883, type: 3}
       propertyPath: 'itemsToSpawn.Array.data[1]'
       value: 
-      objectReference: {fileID: 5211943179542698112, guid: 9c9380bb106bb664b882768a39214f30, type: 3}
+      objectReference: {fileID: 11400000, guid: e4a0294c64f17f743a14b52131a789c5, type: 2}
     - target: {fileID: 5683484001528222745, guid: db865797dc0df9d448bee834eb19c883, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.41
