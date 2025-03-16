@@ -16,6 +16,10 @@ public class InventoryUIManager : MonoBehaviour
 
     public Camera storageCamera; // Inventory camera
     public Camera inspectCamera; // Inspection camera
+    public float zoomSpeed = 15f;
+    public float minZoom = 20f;
+    public float maxZoom = 60f;
+    public float defaultZoom = 60f;
 
     public Button inspectButton; // Button to inspect item
     public GameObject inspectModeUI; // UI for inspect mode
@@ -116,6 +120,7 @@ public class InventoryUIManager : MonoBehaviour
         // Switch cameras back
         inspectCamera.gameObject.SetActive(false);
         storageCamera.gameObject.SetActive(true);
+        inspectCamera.fieldOfView = defaultZoom;
 
         // Move object back to original position
         currentSpawnedItem.transform.position = originalPosition;
@@ -146,6 +151,17 @@ public class InventoryUIManager : MonoBehaviour
         if (isInspecting && currentSpawnedItem != null)
         {
             RotateItem();
+        }
+
+
+        if (isInspecting) // Only allow zooming while in inspect mode
+        {
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll != 0f)
+            {
+                inspectCamera.fieldOfView -= scroll * zoomSpeed;
+                inspectCamera.fieldOfView = Mathf.Clamp(inspectCamera.fieldOfView, minZoom, maxZoom);
+            }
         }
     }
 
