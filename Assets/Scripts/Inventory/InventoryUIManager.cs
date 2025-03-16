@@ -34,7 +34,6 @@ public class InventoryUIManager : MonoBehaviour
 
         Debug.Log($"Inventory contains {InventoryManager.Instance.GetInventory().Count} items on scene load.");
     }
-
     public void ToggleInventory()
     {
         bool isActive = !inventoryPanel.activeSelf;
@@ -139,6 +138,11 @@ public class InventoryUIManager : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape) && isInspecting)
+        {
+            ExitInspectMode();
+        }
+
         if (isInspecting && currentSpawnedItem != null)
         {
             RotateItem();
